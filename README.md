@@ -2,7 +2,7 @@
 Image compression and reconstruction via principal component analysis
 
 
-This is a course project done in Math5793 Advanced Applied Statistics. PCA was used to conduct image (array) compression.
+This is a course project I did in Math5793 Advanced Applied Statistics. PCA was used to conduct image (array) compression.
 
 The PCA_ImageCompression.pdf file is a brief report of the practice with plots and results.
 
