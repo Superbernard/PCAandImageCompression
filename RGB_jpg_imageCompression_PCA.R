@@ -1,3 +1,15 @@
+## PCA Image Compression on RGB Pitures
+#
+# The aim of this piese of script is to implement PCA on three-channel RGB picture arrays. The main function starts from a
+# predetermined compression ratio and the image file to work on. The number of how many principal components to use will be 
+# calculated from the compression ratio. The reconstructed image is then displayed to make comparison with the original image.    
+#
+# Compression ratio R:
+# R = So / Sc , with So represents the size of the original picture array  and Sc represents the total size of the compressed
+# picture arrays.   
+#
+
+
 library(jpeg)
 library(grid)
 
