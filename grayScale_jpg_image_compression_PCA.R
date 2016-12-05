@@ -1,3 +1,16 @@
+## PCA Image Compression on RGB Pitures
+#
+# The aim of this piese of script is to implement PCA on single-channel grayscale picture arrays. It explores compression using different
+# unmber of principal components. The compression ratio and the quality of reconstructed images is are checked and compared with the 
+# original image.    
+#
+# Compression ratio R:
+# R = So / Sc , with So represents the size of the original picture array  and Sc represents the total size of the compressed
+# picture arrays.   
+#
+
+
+
 library(jpeg)
 pic<-readJPEG("C:\\Users\\Zhicong\\Desktop\\study\\R\\projects\\image compress\\ou2.jpeg") 
 #replace with your directory here   
