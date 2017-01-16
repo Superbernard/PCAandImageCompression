@@ -118,14 +118,10 @@ recnstr<-function(loadpath_PCs,loadpath_Eigen_Mtr,loadfile=T,PCs,Eigen_Mtr){
     g_pc<-PCs[,,2]  #pc matrix of channel 2 G
     b_pc<-PCs[,,3]  #pc matrix of channel 3 B
     
-    eigen_r<-PCs[,,1]   #eigen vector matrix of channel 1 R
-    eigen_g<-PCs[,,2]   #eigen vector matrix of channel 2 G
-    eigen_b<-PCs[,,3]   #eigen vector matrix of channel 3 B
-    
-    recon_r<-rec(r_pc,eigen_r)  #reconstructed matrix of channel 1 R
-    recon_g<-rec(g_pc,eigen_g)  #reconstructed matrix of channel 2 G
-    recon_b<-rec(b_pc,eigen_b)  #reconstructed matrix of channel 3 B
-    
+    eigen_r<-Eigen_Mtr[,,1]   #eigen vector matrix of channel 1 R
+    eigen_g<-Eigen_Mtr[,,2]   #eigen vector matrix of channel 2 G
+    eigen_b<-Eigen_Mtr[,,3]   #eigen vector matrix of channel 3 B
+      
   } else{   #load pc and eigen vetor matrices from directory
     
     PCs<-load(loadpath_PCs)  #load pc matrix
@@ -142,10 +138,11 @@ recnstr<-function(loadpath_PCs,loadpath_Eigen_Mtr,loadfile=T,PCs,Eigen_Mtr){
     eigen_g<-Eigen_Mtr[,,2]  #eigen vector matrix of channel 2 G
     eigen_b<-Eigen_Mtr[,,3]  #eigen vector matrix of channel 3 B
     
-    recon_r<-rec(r_pc,eigen_r)  #reconstructed matrix of channel 1 R
-    recon_g<-rec(g_pc,eigen_g)  #reconstructed matrix of channel 2 G
-    recon_b<-rec(b_pc,eigen_b)  #reconstructed matrix of channel 3 B
   }  
+  
+  recon_r<-rec(r_pc,eigen_r)  #reconstructed matrix of channel 1 R
+  recon_g<-rec(g_pc,eigen_g)  #reconstructed matrix of channel 2 G
+  recon_b<-rec(b_pc,eigen_b)  #reconstructed matrix of channel 3 B
   
   comp_data<-array(as.vector(c(recon_r,recon_g,recon_b)),
                    dim=c(dim(recon_r)[1],dim(recon_r)[2],3))  
