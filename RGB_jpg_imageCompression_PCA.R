@@ -44,7 +44,7 @@ eigenpca<-function(x,k){
 }
 
 kvalue<-function(com_ratio,dim1,dim2){ #function to determine k (number of PCs to use) 
-#based on compression ratio (original size / compressed size)
+  #based on compression ratio (original size / compressed size)
   
   #basic idea: size of an empty 3-dimentional array is 208 bytes (empty matrix 200 bytes). 
   #and One numeric element 8 bytes.  
@@ -106,39 +106,28 @@ rec<-function(y,eigen){    #reconstruct matrix from pcs and eigen vectors and al
 
 
 
-recnstr<-function(loadpath_PCs,loadpath_Eigen_Mtr,loadfile=T,PCs,Eigen_Mtr){
+recnstr<-function(PCs,Eigen_Mtr,loadfile=F){
   #function to reconstruct picture
   #input variables represent directory of pc matrices, directory of eigen vector 
   #matrices, whether to load pc matrices data from directory, pc matrices, eigen 
   #vector matrices
   
-  if (loadfile==F){    #load pc and eigen vetor matrices from global environment 
+  if (loadfile==T){    #if load pc and eigen vetor matrices from directory
     
-    r_pc<-PCs[,,1]  #pc matrix of channel 1 R
-    g_pc<-PCs[,,2]  #pc matrix of channel 2 G
-    b_pc<-PCs[,,3]  #pc matrix of channel 3 B
-    
-    eigen_r<-Eigen_Mtr[,,1]   #eigen vector matrix of channel 1 R
-    eigen_g<-Eigen_Mtr[,,2]   #eigen vector matrix of channel 2 G
-    eigen_b<-Eigen_Mtr[,,3]   #eigen vector matrix of channel 3 B
-      
-  } else{   #load pc and eigen vetor matrices from directory
-    
-    PCs<-load(loadpath_PCs)  #load pc matrix
+    PCs<-load(file.choose())  #load pc matrix
     PCs<-get(PCs)
     
-    Eigen_Mtr<-load(loadpath_Eigen_Mtr)  #load eigen vetor matrix
+    Eigen_Mtr<-load(file.choose())  #load eigen vetor matrix
     Eigen_Mtr<-get(Eigen_Mtr)
-    
-    r_pc<-PCs[,,1]  #pc matrix of channel 1 R
-    g_pc<-PCs[,,2]  #pc matrix of channel 2 G
-    b_pc<-PCs[,,3]  #pc matrix of channel 3 B
-    
-    eigen_r<-Eigen_Mtr[,,1]  #eigen vector matrix of channel 1 R
-    eigen_g<-Eigen_Mtr[,,2]  #eigen vector matrix of channel 2 G
-    eigen_b<-Eigen_Mtr[,,3]  #eigen vector matrix of channel 3 B
-    
   }  
+  
+  r_pc<-PCs[,,1]  #pc matrix of channel 1 R
+  g_pc<-PCs[,,2]  #pc matrix of channel 2 G
+  b_pc<-PCs[,,3]  #pc matrix of channel 3 B
+  
+  eigen_r<-Eigen_Mtr[,,1]  #eigen vector matrix of channel 1 R
+  eigen_g<-Eigen_Mtr[,,2]  #eigen vector matrix of channel 2 G
+  eigen_b<-Eigen_Mtr[,,3]  #eigen vector matrix of channel 3 B
   
   recon_r<-rec(r_pc,eigen_r)  #reconstructed matrix of channel 1 R
   recon_g<-rec(g_pc,eigen_g)  #reconstructed matrix of channel 2 G
@@ -168,6 +157,9 @@ check_ratio<-as.numeric(object.size(pic)/(object.size(thunder_comp1)    #check a
                                           +object.size(thunder_comp2)))  
 check_ratio   #should be around 6.2 (compared with predetermined compression ratio in the input)
 
-recnstr("Thunder_compressed1.Rda","Thunder_compressed2.Rda") # show reconstructed pic
+recnstr(NA, NA,loadfile=T) # show reconstructed pic
+# arrays load from directory, set first 2 variables as NA since matrices are loaded from directory 
 dev.off()
-
+recnstr(thunder_comp1, thunder_comp2,loadfile=F) # show reconstructed pic
+# arrays load from global envirenment
+dev.off()
