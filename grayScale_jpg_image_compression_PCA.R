@@ -1,25 +1,25 @@
 ## PCA Image Compression on RGB Pitures
 #
-# The aim of this piese of script is to implement PCA on single-channel grayscale picture arrays. It explores compression using different
-# unmber of principal components. The compression ratio and the quality of reconstructed images is are checked and compared with the 
-# original image.    
+# The aim of this piese of script is to implement principal component analysis (PCA) on single-channel grayscale picture arrays. It 
+# explores compression result from different nunmber of principal components. The compression ratio and the quality of reconstructed 
+# images are checked and compared with those of the original image.    
 #
 # Compression ratio R:
-# R = So / Sc , with So represents the size of the original picture array  and Sc represents the total size of the compressed
-# picture arrays.   
+# R = So / Sc , with So represents the size of the original picture array and Sc represents the total size of the compressed picture 
+# arrays.   
 #
 
 
 
-library(jpeg)
+library(jpeg)  #load package
 pic<-readJPEG("C:\\Users\\Zhicong\\Desktop\\study\\R\\projects\\image compress\\ou2.jpeg") 
 #replace with your directory here   
-str(pic)
-dim(pic)
+str(pic) #check array structure 
+dim(pic) #check array dimension
 
 rgb2gray<-function(rgb){
   #function that convert rgb array to 1 channel grayscale matrix
-  x<- rgb[,,1]*0.21 + rgb[,,2]*0.71 + rgb[,,3]*0.07
+  x<- rgb[,,1]*0.21 + rgb[,,2]*0.71 + rgb[,,3]*0.07   #formula of conversion
   return(x)
 }
 
@@ -33,9 +33,9 @@ dim(pic_gray) #check the dimension again
 
 rotate_pic<-function(array){
   #function to rotate the picture to the right orientation
-  x1<-apply(array,2,rev)
-  x2<-apply(x1,1,rev)
-  return(x2)
+  x1<-apply(array,2,rev)  #reverse within column vectors
+  x2<-apply(x1,1,rev)   #reverse within row vectors
+  return(x2)  
 }
 
 x<-rotate_pic(pic_gray)
@@ -48,48 +48,44 @@ size_or  #size in MB
 size_or<-object.size(x)  #size in bytes
 
 windows()
-layout(matrix(1:16,4,4,byrow=T))
+layout(matrix(1:16,4,4,byrow=T))   # set plot layout
 par(mar=c(3, 2, 1, 2),mgp=c(2,0.5,0))
 
 for (i in 1:16){ # check the distribution of the first 16 variables 
 # (namely first 16 columns of pixel values)
-  hist(x[,i],xlab=paste("x",i,sep=""),main=paste("Histgram of x",i,sep=""))
+  hist(x[,i],xlab=paste("x",i,sep=""),main=paste("Histgram of x",i,sep=""))  #histgram of the ith column vector
 } 
 
 
 #############pca from covariance matrix##########################
 
-cova<-cov(x)
+cova<-cov(x)   #covariance matrix
 
 lambda<-eigen(cova)$values   #eigen values
 eig_v<-eigen(cova)$vectors   #eigen vectors
 
 graphics.off()
-windows()
+windows()   #make graph on a seperate window
 
 plot(y=lambda,x=1:length(lambda),log="x",las=1,ylab="Eigenvalues",
-     xlab="Index (log scale)",main="Scree plot")  #scree plot of eigen values
+     xlab="Index (log scale)",main="Scree plot")   #scree plot of eigen values
 
-cum_var<-cumsum(lambda)/sum(lambda)*100  #cumulative portion of variance 
-#explained by the first n PCs
+cum_var<-cumsum(lambda)/sum(lambda)*100  #cumulative portion of variance explained by the first n PCs
 
-cum_var[c(5,10,20,60,100)]
+cum_var[c(5,10,20,60,100)]   #check cumulative portion of variance explained by specific numbers of PCs
 
 windows()
 plot(y=cum_var,x=1:length(lambda),log="x",las=1,ylab="Cumulative percentage of total variance",
-     xlab="Index (log scale)",main="Cumulative variance")
-
+     xlab="Index (log scale)",main="Cumulative variance")   #cumulative portion of variance explained vs number of PCs
 
 k=100 #use the first k principal components
 
-cum_var[100] #check the portion of variance explained by the first k PCs in 
-#percentage
+cum_var[100] #check the portion of variance explained by the first 100 PCs in percentage
 
-y<-matrix(nrow=k,ncol=dim(x)[1])
+y<-matrix(nrow=k,ncol=dim(x)[1])  #empty matrix to hold principal components matrix
 y<-t(eig_v[,1:k])%*%t(x)  #calculate principal components from eigen vectors
 
-
-recon<-t(eig_v[,1:k]%*%y)  #reconstruct the data from compressed representation
+recon<-t(eig_v[,1:k]%*%y)  #reconstructed data from compressed representation
 
 dim(recon)  #check the dimension of the reconstructed data
 dim(x)  #compare with reconstructed data
@@ -97,8 +93,6 @@ dim(x)  #compare with reconstructed data
 graphics.off()
 image(z=recon, col  = gray((0:99)/100),xaxt="n", yaxt="n",xlab="Reconstructed")  
 #display compressed image 
-
-
 
 size_recon<-object.size(recon)  
 #Image (matrix) size after reconstruction should be the same with the original image
@@ -110,21 +104,19 @@ rmse <- function(y,z){   #function to calculate root mean square error
 }
 
 size_comp<-object.size(eig_v[,1:k])+object.size(y)
-#compressed size, storage of 2 matrices: eig_v[,1:k] (first k eigen vectors) and y
+#compressed size, storage of 2 matrices: eig_v[,1:k] (first k eigen vectors) and y (pcs)
 
 size_comp
 
 error<-rmse(x,recon)  # check error
 
-com_rat<-paste(round(size_or/size_comp,2),":",1)  #compressed ratio 
-# defined as original size/ compressed size
+com_rat<-paste(round(size_or/size_comp,2),":",1)  #compressed ratio defined as original size/ compressed size
 com_rat
 
-
 imcom<-function(filepath,k){
-  #Function that takes the filepath of the picture and the number of pcs k 
+  #Make a function that takes the filepath of the picture and the number of pcs k 
   #to use to reconstruct the pic and output compression ratio and error
-  pic<-readJPEG(filepath)
+  pic<-readJPEG(filepath)  #import image file
   
   if ( is.na( dim( pic ) [3] )==F ) { #if dimension of pic is 3
     pic_gray<-rgb2gray(pic) # convert it from rgb to gray scale
@@ -132,15 +124,15 @@ imcom<-function(filepath,k){
     pic_gray<-pic #no conversion
   }
   
-  x<-rotate_pic(pic_gray)
+  x<-rotate_pic(pic_gray)  #call rotate_pic() to rotate picture to the right orientation
   
-  if ( dim(x)[1]<dim(x)[2] ) {  # rotate if num of rows is larger than num of columns 
+  if ( dim(x)[1]<dim(x)[2] ) {  #rotate if num of rows is larger than num of columns 
     x<-t(x)
   }
   
   size_or<-object.size(x)
   
-  cova<-cov(x)  
+  cova<-cov(x)  #covariance
   
   lambda<-eigen(cova)$values   #eigen values
   eig_v<-eigen(cova)$vectors   #eigen vectors
@@ -150,31 +142,31 @@ imcom<-function(filepath,k){
   
   size_comp<-object.size(eig_v[,1:k])+object.size(y)
   
-  recon<-t(eig_v[,1:k]%*%y) #reconstruct the data from compressed representation
+  recon<-t(eig_v[,1:k]%*%y) #reconstruct data from compressed representation
   
   comp_ratio_v<-as.numeric(round(size_or/size_comp,1))  
-  #compression ratio value in 1 decimal place
+  #compression ratio value, 1 decimal place (for numeric calculation)
   compress_ratio<-paste(round(size_or/size_comp,1),":",1) 
-  #compression ratio value in the form of a : 1
-  error<-rmse(recon,x)
+  #compression ratio in the form of a : 1 (for text label)
+  error<-rmse(recon,x)  #root mean square error
   
   par(mar=c(0.2, 0.2, 0, 0),mgp=c(0.5,1,0))
   image(z=recon, col  = gray((0:99)/100), xaxt="n", yaxt="n")  
   #display compressed image
-  text(x=0.17,y=0.06,labels=paste(k,"PCs"),col="white")
-  text(x=0.84,y=0.06,labels=compress_ratio,col="white")
+  text(x=0.17,y=0.06,labels=paste(k,"PCs"),col="white")  #add text labels showing number of PCs
+  text(x=0.84,y=0.06,labels=compress_ratio,col="white")  #add text labels showing compression ratios
   
   list( compress_ratio = compress_ratio , error = error
-        , comp_ratio_v =comp_ratio_v)
+        , comp_ratio_v =comp_ratio_v)  #output a list
 }
 
 
-maxk<-dim(pic)[1]
+maxk<-dim(pic)[1]  #the maximum value of k cannot exceed the dimension of pic array
 maxk
 
-ks1<-c(1:15,seq(20,30,5),seq(40,70,10),c(100,200,400))  #test different num of k
+ks1<-c(1:15,seq(20,30,5),seq(40,70,10),c(100,200,400))  #test different values of k
 
-ks2<-c(  1, 20, 100, 200, 400) #test different num of k
+ks2<-c(  1, 20, 100, 200, 400) #test different values of k
 
 file<-"C:\\Users\\Zhicong\\Desktop\\study\\R\\projects\\image compress\\ou2.jpeg"
 #replace with your file path
@@ -187,10 +179,10 @@ e2<-character(length(ks2))
 
 
 layout(matrix(1:length(ks1),5,5,byrow=T))   # display reconstructed images 
-for (i in 1:length(ks1)){
-  result<-imcom(file,ks1[i])
-  ratio1[i]=result$comp_ratio_v
-  e1[i]=result$error
+for (i in 1:length(ks1)){  #loop through k values to be input
+  result<-imcom(file,ks1[i])  #conduct image compression
+  ratio1[i]=result$comp_ratio_v  #compression ratio
+  e1[i]=result$error  #error
   
 }
 
@@ -205,13 +197,13 @@ plot(ks1,ratio1,log="x",xlab="number of PCs m",ylab="compression ratio")
 
 graphics.off()
 layout(matrix(1:6,3,2,byrow=T))  # display reconstructed images 
-for (i in 1:length(ks2)){
-  result<-imcom(file,ks2[i])
-  ratio2[i]=result$comp_ratio_v
-  e2[i]=result$error
+for (i in 1:length(ks2)){   #loop through k values to be input
+  result<-imcom(file,ks2[i])   #conduct image compression
+  ratio2[i]=result$comp_ratio_v  #compression ratio
+  e2[i]=result$error   #error
 }
 image(z=x, col  = gray((0:99)/100), xaxt="n", yaxt="n")   #display original image
-text(x=0.15,y=0.06,labels="Original",col="white")
+text(x=0.15,y=0.06,labels="Original",col="white")   #add text label
 
 
 
