@@ -364,7 +364,8 @@ maxk
 ks1<-c(1:15,seq(20,30,5),seq(40,70,10),c(100,200,400))    #specify k vectors (number of PCs)
 ks2<-c(  1, 20, 100, 200, 400)
 
-file<-"C:\\Users\\Zhicong\\Desktop\\study\\R\\projects\\image compress\\ou2.jpeg"   #replace with your file path
+#file<-"C:\\Users\\Zhicong\\Desktop\\study\\R\\projects\\image compress\\ou2.jpeg"   #replace with your file path
+#test on same image
 
 ratio_r1<-character(length(ks1))    #empty vectors to hold compression ratios
 ratio_r2<-character(length(ks1))
